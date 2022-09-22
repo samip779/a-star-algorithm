@@ -26,19 +26,25 @@ def heuristic(p1: Location,p2: Location) -> int:
     return abs(x1-x2) + abs(y1-y2)
 
 
-def find_neighbours(state: Location, terrain_map: Map, terrain_threshold: int):
+def find_neighbours(state: Location, terrain_map: Map, terrain_threshold: int, f_score):
     row, column = state
     neighbours = []
+    
     if row < len(terrain_map) - 1 and terrain_map[row + 1][column] < terrain_threshold: #DOWN
         neighbours.append((row + 1, column))
+    elif row < len(terrain_map) - 1 and terrain_map[row + 1][column] >= terrain_threshold: log_ignore_state((row + 1, column), f_score[row+1, column])
+    
     if row > 0 and terrain_map[row-1][column] < terrain_threshold: #UP
         neighbours.append((row - 1, column))
+    elif row > 0 and terrain_map[row - 1][column] >= terrain_threshold: log_ignore_state((row - 1, column), f_score[row-1, column])
 
     if column < len(terrain_map[row]) -1 and terrain_map[row][column + 1] < terrain_threshold: #LEFT
         neighbours.append((row, column + 1))
+    elif column < len(terrain_map[row]) -1 and terrain_map[row][column + 1] >= terrain_threshold: log_ignore_state((row, column + 1), f_score[row, column + 1])
 
     if column > 0 and terrain_map[row][column - 1] < terrain_threshold: #RIGHT
         neighbours.append((row, column - 1))
+    elif column > 0 and terrain_map[row][column - 1] >= terrain_threshold: log_ignore_state((row, column - 1), f_score[row, column - 1])
 
     return neighbours
 
@@ -88,7 +94,7 @@ def algorithm(start: Location, goal: Location, terrain_map: Map, terrain_thresho
             result.append(goal)
             return [g_score[goal], result]
 
-        for neighbour in find_neighbours(current, terrain_map, terrain_threshold):
+        for neighbour in find_neighbours(current, terrain_map, terrain_threshold, f_score):
             x,y = neighbour
             temp_g_score = g_score[current] + terrain_map[current[0]][current[1]] + terrain_map[x][y]
             if temp_g_score < g_score[neighbour]:
