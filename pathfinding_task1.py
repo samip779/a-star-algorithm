@@ -18,7 +18,6 @@ def reconstruct_path(came_from, current):
 
 
 
-
 # this function calculates heuristic value using Manhatten's distance formula
 def heuristic(p1: Location,p2: Location) -> int:
     x1, y1 = p1

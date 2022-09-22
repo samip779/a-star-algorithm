@@ -4,18 +4,18 @@ from events import log
 from maps import Location, Map
 from parsing import validate_location, validate_map
 
-def find_shortest_safe_path(start: Location, goal: Location, 
+def find_shortest_safe_path(start: Location, goal: Location,
                             terrain_map: Map, terrain_threshold: int,
                             success_map: Map, success_threshold: float) \
                             -> tuple[Optional[int],Optional[float],Optional[list[Location]]]:
-    """Finds the path with lowest total cost that also satisfies 
+    """Finds the path with lowest total cost that also satisfies
        the minimum success probability threshold (Task 2).
        Returns (cost,prob_success,list(locations)) when a path is found.
        Returns (None,None,None) if no path is found."""
 
     # This is the entry point for your code for Task 2.
-    # Please create additional functions and classes etc as needed 
-    # to structure your implementation. 
+    # Please create additional functions and classes etc as needed
+    # to structure your implementation.
     # Avoid implementing the entire algorithm in one long chunk.
 
     raise NotImplementedError
@@ -28,8 +28,8 @@ def find_shortest_safe_path(start: Location, goal: Location,
 @click.argument("terrain_threshold", required=True, type=click.IntRange(min=0,max=1000))
 @click.argument("success_map", required=True, type=click.Path(exists=True), callback=validate_map)
 @click.argument("success_threshold", required=True, type=click.FloatRange(min=0.0,max=1.0))
-def main(start: Location, goal: Location, 
-         terrain_map: Map, success_map: Map, 
+def main(start: Location, goal: Location,
+         terrain_map: Map, success_map: Map,
          terrain_threshold: int, success_threshold: float) -> None:
     """Example usage:
 
