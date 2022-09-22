@@ -47,8 +47,8 @@ def find_neighbours(state: Location, terrain_map: Map, terrain_threshold: int):
 
 def algorithm(start: Location, goal: Location, terrain_map: Map, terrain_threshold: int):
     count = 0
-    open_set = PriorityQueue()
-    open_set.put((0, count, start))
+    frontier = PriorityQueue()
+    frontier.put((0, count, start))
     log_enqueue_state(start, heuristic(start, goal))
     came_from = {}
 
@@ -76,11 +76,11 @@ def algorithm(start: Location, goal: Location, terrain_map: Map, terrain_thresho
 
 
 
-    open_set_hash = {start}
+    frontier_hash = {start}
 
-    while not open_set.empty():
-        current = open_set.get()[2]
-        open_set_hash.remove(current)
+    while not frontier.empty():
+        current = frontier.get()[2]
+        frontier_hash.remove(current)
         log_visit_state(current, f_score[current])
 
         if current == goal:
@@ -95,11 +95,11 @@ def algorithm(start: Location, goal: Location, terrain_map: Map, terrain_thresho
                 came_from[neighbour] = current
                 g_score[neighbour] = temp_g_score
                 f_score[neighbour] = temp_g_score + heuristic(neighbour, goal)
-                if neighbour not in open_set_hash:
+                if neighbour not in frontier_hash:
                     count += 1
-                    open_set.put((f_score[neighbour], count, neighbour))
+                    frontier.put((f_score[neighbour], count, neighbour))
                     log_enqueue_state(neighbour, f_score[neighbour])
-                    open_set_hash.add(neighbour)
+                    frontier_hash.add(neighbour)
 
     return None
 
@@ -124,9 +124,9 @@ def find_shortest_path(start: Location, goal: Location,
     # Avoid implementing the entire algorithm in one long chunk.
 
     return algorithm(start, goal, terrain_map, terrain_threshold)
-    
 
-    
+
+
 
 
 @click.command(no_args_is_help=True)
