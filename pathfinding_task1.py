@@ -90,9 +90,8 @@ def algorithm(start: Location, goal: Location, terrain_map: Map, terrain_thresho
             return [g_score[goal], result]
 
         for neighbour in find_neighbours(current, terrain_map, terrain_threshold, f_score):
-            x, y = neighbour
             temp_g_score = g_score[current] + \
-                terrain_map[current[0]][current[1]] + terrain_map[x][y]
+                terrain_map[current] + terrain_map[neighbour]
             if temp_g_score < g_score[neighbour]:
                 came_from[neighbour] = current
                 g_score[neighbour] = temp_g_score
