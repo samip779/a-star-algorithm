@@ -4,7 +4,10 @@ from events import log, log_enqueue_state, log_ignore_state, log_visit_state
 from maps import Location, Map
 from parsing import validate_location, validate_map
 from queue import PriorityQueue
+import uuid
 
+def generate_uuid():
+    return str(uuid.uuid4())
 
 def reconstruct_path(came_from, current):
     path = []
@@ -75,9 +78,10 @@ def algorithm(start: Location, goal: Location, terrain_map: Map, terrain_thresho
 
     for row in range(len(terrain_map)):
         for col in range(len(terrain_map[row])):
-            g_score[(row, col)] = float("inf")
+            g_score[(row, col)] = [float("inf"), []]
 
-    g_score[start] = 0
+    g_score[start][0] = 0
+    g_score[start][1].append(generate_uuid())
 
     for row in range(len(terrain_map)):
         for col in range(len(terrain_map[row])):
@@ -95,18 +99,20 @@ def algorithm(start: Location, goal: Location, terrain_map: Map, terrain_thresho
         if current == goal:
             result = reconstruct_path(came_from, goal)
             result.append(goal)
-            return [g_score[goal], probability[goal], result]
+            return [g_score[goal][0], probability[goal], result]
 
         for neighbour in find_neighbours(current, terrain_map, terrain_threshold, f_score):
-            temp_g_score = g_score[current] + \
+            temp_g_score = g_score[current][0] + \
                 terrain_map[current] + terrain_map[neighbour]
             temp_prob = probability[current] * \
                 find_probability(success_map[neighbour])
  
-            if temp_g_score < g_score[neighbour] and temp_prob >= success_threshold:
+            if (temp_g_score < g_score[neighbour][0] or g_score[current][1] not in g_score[neighbour][1]) and temp_prob >= success_threshold:
 
                 came_from[neighbour] = current
-                g_score[neighbour] = temp_g_score
+                g_score[neighbour][0] = temp_g_score
+                # g_score[neighbour][1] = g_score[current][1].append(generate_uuid())
+                
                 f_score[neighbour] = temp_g_score + heuristic(neighbour, goal)
                 probability[neighbour] = temp_prob
                 if neighbour not in frontier_hash:
