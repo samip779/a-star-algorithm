@@ -14,7 +14,7 @@ def reconstruct_path(came_from, current):
     reversed_path = path[::-1]
     return reversed_path
 
-# this function calculates heuristic value using Manhatten's distance formula
+# This function calculates heuristic value using Manhatten's distance formula.
 def heuristic(p1: Location, p2: Location) -> int:
     x1, y1 = p1
     x2, y2 = p2
@@ -30,28 +30,28 @@ def find_neighbours(state: Location, terrain_map: Map, terrain_threshold: int, f
         neighbours.append((row + 1, column))
     elif row < len(terrain_map) - 1 and terrain_map[row + 1][column] >= terrain_threshold:
         log_ignore_state((row + 1, column), f_score[row+1, column])
-        pass
+        
 
     # UP
     if row > 0 and terrain_map[row-1][column] < terrain_threshold:
         neighbours.append((row - 1, column))
     elif row > 0 and terrain_map[row - 1][column] >= terrain_threshold:
         log_ignore_state((row - 1, column), f_score[row-1, column])
-        pass
+        
 
-    # LEFT
+    # RIGHT
     if column < len(terrain_map[row]) - 1 and terrain_map[row][column + 1] < terrain_threshold:
         neighbours.append((row, column + 1))
     elif column < len(terrain_map[row]) - 1 and terrain_map[row][column + 1] >= terrain_threshold:
         log_ignore_state((row, column + 1), f_score[row, column + 1])
-        pass
+        
 
-    # RIGHT
+    # LEFT
     if column > 0 and terrain_map[row][column - 1] < terrain_threshold:
         neighbours.append((row, column - 1))
     elif column > 0 and terrain_map[row][column - 1] >= terrain_threshold:
         log_ignore_state((row, column - 1), f_score[row, column - 1])
-        pass
+        
 
     return neighbours
 
@@ -65,7 +65,7 @@ def algorithm(start: Location, goal: Location, terrain_map: Map, terrain_thresho
     count = 0
     frontier = PriorityQueue()
     frontier.put((0, count, start))
-    log_enqueue_state(start, heuristic(start, goal))
+    log_enqueue_state(start, heuristic(start, goal), find_probability(success_map[start]))
     came_from = {}
 
     g_score = {}
@@ -90,7 +90,7 @@ def algorithm(start: Location, goal: Location, terrain_map: Map, terrain_thresho
     while not frontier.empty():
         current = frontier.get()[2]
         frontier_hash.remove(current)
-        log_visit_state(current, f_score[current])
+        log_visit_state(current, f_score[current], probability[current])
 
         if current == goal:
             result = reconstruct_path(came_from, goal)
@@ -102,7 +102,7 @@ def algorithm(start: Location, goal: Location, terrain_map: Map, terrain_thresho
                 terrain_map[current] + terrain_map[neighbour]
             temp_prob = probability[current] * \
                 find_probability(success_map[neighbour])
-
+ 
             if temp_g_score < g_score[neighbour] and temp_prob >= success_threshold:
 
                 came_from[neighbour] = current
@@ -112,7 +112,7 @@ def algorithm(start: Location, goal: Location, terrain_map: Map, terrain_thresho
                 if neighbour not in frontier_hash:
                     count += 1
                     frontier.put((f_score[neighbour], count, neighbour))
-                    log_enqueue_state(neighbour, f_score[neighbour])
+                    log_enqueue_state(neighbour, f_score[neighbour], probability[neighbour])
                     frontier_hash.add(neighbour)
 
     return None
