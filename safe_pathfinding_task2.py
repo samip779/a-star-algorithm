@@ -14,10 +14,21 @@ def reconstruct_path(came_from, current):
     reversed_path = path[::-1]
     return reversed_path
 
-# This function calculates heuristic value using Manhatten's distance formula.
+
 
 
 def heuristic(p1: Location, p2: Location) -> int:
+    # This function calculates heuristic value using Manhatten's distance formula.
+
+    # It is consistent(Monotonic).
+    # It fulfills the condition : h(n) <= h(m) + cost(n-m)
+    # where m is a direct successor of n and h(g) = 0 for any goal state g
+    
+    # It always calculated the shortest distance between two points in a grid.
+
+    # It is the sum of horizontal and vertical distance.
+    # It is restricted to traverse diagonally in this map so Manhatten's
+    # distance is prefered over other methods like Euclidean distance.
     x1, y1 = p1
     x2, y2 = p2
     return abs(x1-x2) + abs(y1-y2)
