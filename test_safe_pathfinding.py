@@ -74,4 +74,4 @@ def test_world_04_enemy():
 
 
 if __name__ == '__main__':
-    test_world_02_enemy()
+    test_world_01_enemy_a()
