@@ -15,6 +15,8 @@ def reconstruct_path(came_from, current):
     return reversed_path
 
 # This function calculates heuristic value using Manhatten's distance formula.
+
+
 def heuristic(p1: Location, p2: Location) -> int:
     x1, y1 = p1
     x2, y2 = p2
@@ -28,34 +30,18 @@ def find_neighbours(state: Location, terrain_map: Map, terrain_threshold: int):
     # DOWN
     if row < len(terrain_map) - 1 and terrain_map[row + 1][column] < terrain_threshold:
         neighbours.append((row + 1, column))
-    elif row < len(terrain_map) - 1 and terrain_map[row + 1][column] >= terrain_threshold:
-        # log_ignore_state((row + 1, column), f_score[row+1, column])
-        pass
-        
 
     # UP
     if row > 0 and terrain_map[row-1][column] < terrain_threshold:
         neighbours.append((row - 1, column))
-    elif row > 0 and terrain_map[row - 1][column] >= terrain_threshold:
-        # log_ignore_state((row - 1, column), f_score[row-1, column])
-        pass
-        
 
     # RIGHT
     if column < len(terrain_map[row]) - 1 and terrain_map[row][column + 1] < terrain_threshold:
         neighbours.append((row, column + 1))
-    elif column < len(terrain_map[row]) - 1 and terrain_map[row][column + 1] >= terrain_threshold:
-        # log_ignore_state((row, column + 1), f_score[row, column + 1])
-        pass
-        
 
     # LEFT
     if column > 0 and terrain_map[row][column - 1] < terrain_threshold:
         neighbours.append((row, column - 1))
-    elif column > 0 and terrain_map[row][column - 1] >= terrain_threshold:
-        # log_ignore_state((row, column - 1), f_score[row, column - 1])
-        pass
-        
 
     return neighbours
 
@@ -65,17 +51,16 @@ def find_probability(e):
 
 
 def algorithm(start: Location, goal: Location, terrain_map: Map, terrain_threshold: int, success_map: Map, success_threshold: float):
- 
+
     count = 0
     frontier = PriorityQueue()
     frontier.put((0, count, start))
-    log_enqueue_state(start, heuristic(start, goal), find_probability(success_map[start]))
+    log_enqueue_state(start, heuristic(start, goal),
+                      find_probability(success_map[start]))
     came_from = {}
     for row in range(len(terrain_map)):
         for col in range(len(terrain_map[row])):
             came_from[(row, col)] = ()
-
-    
 
     g_score = {}
     f_score = {}
@@ -88,7 +73,6 @@ def algorithm(start: Location, goal: Location, terrain_map: Map, terrain_thresho
             g_score[(row, col)] = float("inf")
 
     g_score[start] = 0
-    
 
     for row in range(len(terrain_map)):
         for col in range(len(terrain_map[row])):
@@ -119,35 +103,35 @@ def algorithm(start: Location, goal: Location, terrain_map: Map, terrain_thresho
                 find_probability(success_map[neighbour])
             temp_f_score = temp_g_score + heuristic(neighbour, goal)
 
-            
-            
-            if temp_g_score < g_score[neighbour] and temp_prob >= success_threshold:
+            if temp_f_score < f_score[neighbour] and temp_prob >= success_threshold:
                 isenqued = True
                 came_from[neighbour] = current
                 g_score[neighbour] = temp_g_score
-
 
                 f_score[neighbour] = temp_f_score
                 probability[neighbour] = temp_prob
                 if neighbour not in frontier_hash:
                     count += 1
                     frontier.put((f_score[neighbour], count, neighbour))
-                    log_enqueue_state(neighbour, f_score[neighbour], probability[neighbour])
+                    log_enqueue_state(
+                        neighbour, f_score[neighbour], probability[neighbour])
                     frontier_hash.add(neighbour)
-            elif temp_g_score >=g_score[neighbour] and temp_prob >= success_threshold:
+            elif temp_f_score >= f_score[neighbour] and temp_prob >= success_threshold:
                 dequeed.append((f_score[neighbour], count, neighbour))
+                log_ignore_state(neighbour, temp_f_score, temp_prob)
 
         if isenqued == False:
-            
-            erase_g_score(current, g_score, came_from, terrain_map, terrain_threshold)
+
+            erase_g_score(current, g_score, came_from,
+                          terrain_map, terrain_threshold)
 
         if frontier.empty():
             for item in dequeed:
                 frontier.put(item)
             dequeed.clear()
 
-         
     return None
+
 
 def erase_g_score(current, g_score, came_from, terrain_map, terrain_threshold):
     iterate = True
@@ -156,7 +140,7 @@ def erase_g_score(current, g_score, came_from, terrain_map, terrain_threshold):
         parent = came_from[current]
         came_from[current] = ()
         neighbours = find_neighbours(parent, terrain_map, terrain_threshold)
-        
+
         for neighbour in neighbours:
             if came_from[neighbour] == parent:
                 iterate = False
@@ -165,8 +149,6 @@ def erase_g_score(current, g_score, came_from, terrain_map, terrain_threshold):
                 continue
         if iterate:
             current = parent
-    
-
 
 
 def find_shortest_safe_path(start: Location, goal: Location,
