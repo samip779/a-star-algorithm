@@ -14,7 +14,7 @@ def reconstruct_path(came_from, current):
         current = came_from[current]
         path.append(current)
     reversed_path = path[::-1]
-    reversed_path.pop(0)
+    
     return reversed_path
 
 
@@ -55,13 +55,11 @@ def algorithm(start: Location, goal: Location, terrain_map: Map, terrain_thresho
     log_enqueue_state(start, heuristic(start, goal))
     came_from = {}
 
-    for row in range(len(terrain_map)):
-        for col in range(len(terrain_map[row])):
-            came_from[(row, col)] = ()
+   
 
     g_score = {}
     f_score = {}
-    dequeed = []
+    
 
     for row in range(len(terrain_map)):
         for col in range(len(terrain_map[row])):
@@ -87,11 +85,10 @@ def algorithm(start: Location, goal: Location, terrain_map: Map, terrain_thresho
             result.append(goal)
             return [g_score[goal], result]
 
-        isenqued = False
+        
 
         neighbors = find_neighbours(current, terrain_map, terrain_threshold)
-        if len(neighbors) == 0:
-            return None
+        
 
         for neighbour in neighbors:
             temp_g_score = g_score[current] + \
@@ -99,7 +96,7 @@ def algorithm(start: Location, goal: Location, terrain_map: Map, terrain_thresho
             temp_f_score = temp_g_score + heuristic(neighbour, goal)
 
             if temp_f_score < f_score[neighbour]:
-                isenqued = True
+                
                 came_from[neighbour] = current
                 g_score[neighbour] = temp_g_score
                 f_score[neighbour] = temp_g_score + heuristic(neighbour, goal)
@@ -108,39 +105,17 @@ def algorithm(start: Location, goal: Location, terrain_map: Map, terrain_thresho
                     frontier.put((f_score[neighbour], count, neighbour))
                     log_enqueue_state(neighbour, f_score[neighbour])
                     frontier_hash.add(neighbour)
-            elif temp_f_score >= f_score[neighbour]:
-                dequeed.append((f_score[neighbour], count, neighbour))
-                log_ignore_state(neighbour, temp_f_score)
+            else:
+                log_ignore_state(neighbour,temp_f_score)
+            
 
-        if isenqued == False:
+           
 
-            erase_g_score(current, g_score, came_from,
-                          terrain_map, terrain_threshold)
-
-        if frontier.empty():
-            for item in dequeed:
-                frontier.put(item)
-            dequeed.clear()
+   
 
     return None
 
 
-def erase_g_score(current, g_score, came_from, terrain_map, terrain_threshold):
-    iterate = True
-    while iterate:
-        g_score[current] = float("inf")
-        parent = came_from[current]
-        came_from[current] = ()
-        neighbours = find_neighbours(parent, terrain_map, terrain_threshold)
-
-        for neighbour in neighbours:
-            if came_from[neighbour] == parent:
-                iterate = False
-                break
-            else:
-                continue
-        if iterate:
-            current = parent
 
 
 def find_shortest_path(start: Location, goal: Location,
