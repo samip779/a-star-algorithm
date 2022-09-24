@@ -22,7 +22,8 @@ def heuristic(p1: Location, p2: Location) -> int:
     x2, y2 = p2
     return abs(x1-x2) + abs(y1-y2)
 
-# hello
+
+# This function finds all the possible neighbours excluding neighbours extending terrain_threshold
 def find_neighbours(state: Location, terrain_map: Map, terrain_threshold: int):
     row, column = state
     neighbours = []
